@@ -58,10 +58,7 @@ class Matrix():
         # If the target cell is not found, return -1
         return -1
     def cell_score(self,id):
-        bonus = 0
-        if self.get(id).cell_type == 1:
-            bonus = (1-self.get_my_ants()/10)*self.get(id).resources
-        return self.get(id).resources / (self.distance(my_bases[0],id)+22)+bonus
+        return self.get(id).resources / (self.distance(my_bases[0],id)+2)
 
     def best_cells(self):
         scores = []
@@ -91,6 +88,9 @@ def move(id):
     print(f'LINE {my_bases[0]} {id} {7}')
 def test(id):
     print(f'BEACON {id} {1}')
+
+
+doing = None
 while True:
     candidates = MATRIX.best_cells()
 
@@ -108,14 +108,21 @@ while True:
         MATRIX.get(i).opp_ants = opp_ants
         
             
-
     # WAIT
     # LINE <sourceIdx> <targetIdx> <strength>
     # BEACON <cellIdx> <strength>
     # MESSAGE <text>
-    if candidates:
+    if doing and MATRIX.get(doing).resources < 5:
+        doing = None
+    if doing:
+        if MATRIX.get(doing).my_ants > 7:
+            print('WAIT')
+        else:
+            move(doing)
+    elif candidates:
         for i in range(len(candidates)):
             if i == 0:
+                doing = candidates[i]
                 move(candidates[i])
     else:
         print('WAIT')
